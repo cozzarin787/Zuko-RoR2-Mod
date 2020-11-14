@@ -1,0 +1,24 @@
+{
+  "ManifestVersion": 2,
+  "AuthorName": "jcozzarin",
+  "Name": "jcozzarin-Zuko",
+  "DisplayName": "Zuko",
+  "Version": "0.0.1",
+  "Licence": "",
+  "WebsiteURL": "",
+  "Description": "Lord Zuko is here, ready to restore his honor.",
+  "GameVersion": "TEST",
+  "Dependencies": [
+    "bbepis-BepInExPack-5.3.1",
+    "tristanmcpherson-R2API-2.5.14"
+  ],
+  "OptionalDependencies": [],
+  "Incompatibilities": [],
+  "NetworkMode": "both",
+  "PackageType": "mod",
+  "InstallMode": "managed",
+  "Loaders": [
+    "bepinex"
+  ],
+  "ExtraData": {}
+}
