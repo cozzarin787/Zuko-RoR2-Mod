@@ -12,6 +12,7 @@ using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.Networking;
 using KinematicCharacterController;
+using EntityStates.Mage.Weapon;
 
 namespace ExampleSurvivor
 {
@@ -391,7 +392,7 @@ namespace ExampleSurvivor
         void RegisterStates()
         {
             // register the entitystates for networking reasons
-            LoadoutAPI.AddSkill(typeof(ExampleSurvivorFireArrow));
+            LoadoutAPI.AddSkill(typeof(FireFireBolt));
         }
 
         void PassiveSetup()
@@ -418,7 +419,7 @@ namespace ExampleSurvivor
             // set up your primary skill def here!
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(ExampleSurvivorFireArrow));
+            mySkillDef.activationState = new SerializableEntityStateType(typeof(FireFireBolt));
             mySkillDef.activationStateMachineName = "Weapon";
             mySkillDef.baseMaxStock = 1;
             mySkillDef.baseRechargeInterval = 0f;
@@ -505,7 +506,7 @@ namespace ExampleSurvivor
         {
             if (MainAssetBundle == null)
             {
-                using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ExampleSurvivor.examplesurvivorbundle"))
+                using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Zuko.zukobundle"))
                 {
                     MainAssetBundle = AssetBundle.LoadFromStream(assetStream);
                     Provider = new AssetBundleResourcesProvider("@ExampleSurvivor", MainAssetBundle);
