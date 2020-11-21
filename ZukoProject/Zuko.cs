@@ -417,6 +417,14 @@ namespace ExampleSurvivor
             LanguageAPI.Add("EXAMPLESURVIVOR_PRIMARY_CROSSBOW_DESCRIPTION", "Fire an arrow, dealing <style=cIsDamage>200% damage</style>.");
 
             // set up your primary skill def here!
+            On.EntityStates.Mage.Weapon.FireFireBolt.OnEnter += (orig, self) =>
+            {
+                // [The code we want to run]
+                self.damageCoefficient = 0.1f;
+                // Call the original function (orig)
+                // on the object it's normally called on (self)
+                orig(self);
+            };
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
             mySkillDef.activationState = new SerializableEntityStateType(typeof(FireFireBolt));
