@@ -1,7 +1,11 @@
 ManifestFileVersion: 0
-CRC: 3899954407
+CRC: 2447630847
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: exampleitemmod
+      Name: examplesurvivorbundle
       Dependencies: {}
+    Info_1:
+      Name: zukobundle
+      Dependencies:
+        Dependency_0: examplesurvivorbundle
