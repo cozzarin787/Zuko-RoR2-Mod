@@ -5,27 +5,26 @@ using BepInEx;
 using R2API;
 using R2API.Utils;
 using EntityStates;
-using EntityStates.ExampleSurvivorStates;
+using EntityStates.ZukoStates;
 using RoR2;
 using RoR2.Skills;
 using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.Networking;
 using KinematicCharacterController;
-using EntityStates.Mage.Weapon;
 
-namespace ExampleSurvivor
+namespace Zuko
 {
 
     [BepInDependency("com.bepis.r2api")]
 
-    [BepInPlugin(MODUID, "ExampleSurvivor", "1.0.0")] // put your own name and version here
-    [R2APISubmoduleDependency(nameof(PrefabAPI), nameof(SurvivorAPI), nameof(LoadoutAPI), nameof(ItemAPI), nameof(DifficultyAPI), nameof(BuffAPI))] // need these dependencies for the mod to work properly
+    [BepInPlugin(MODUID, "Zuko", "0.0.2")] // put your own name and version here
+    [R2APISubmoduleDependency(nameof(PrefabAPI), nameof(SurvivorAPI), nameof(LoadoutAPI), nameof(ItemAPI), nameof(DifficultyAPI), nameof(BuffAPI), nameof(LanguageAPI))] // need these dependencies for the mod to work properly
 
 
-    public class ExampleSurvivor : BaseUnityPlugin
+    public class Zuko : BaseUnityPlugin
     {
-        public const string MODUID = "com.developer_name.ExampleSurvivor"; // put your own names here
+        public const string MODUID = "com.manpackproductions.Zuko"; // put your own names here
 
         public static GameObject characterPrefab; // the survivor body prefab
         public GameObject characterDisplay; // the prefab used for character select
@@ -51,7 +50,7 @@ namespace ExampleSurvivor
             Destroy(main.transform.Find("AimOrigin").gameObject);
 
             // make sure it's set up right in the unity project
-            GameObject model = Assets.MainAssetBundle.LoadAsset<GameObject>("mdlExampleSurvivor");
+            GameObject model = Assets.MainAssetBundle.LoadAsset<GameObject>("mdlZuko");
 
             return model;
         }
@@ -59,7 +58,7 @@ namespace ExampleSurvivor
         internal static void CreatePrefab()
         {
             // first clone the commando prefab so we can turn that into our own survivor
-            characterPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody"), "ExampleSurvivorBody", true, "C:\\Users\\test\\Documents\\ror2mods\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor.cs", "CreatePrefab", 151);
+            characterPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody"), "ZukoBody", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "CreatePrefab", 151);
 
             characterPrefab.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 
@@ -102,8 +101,8 @@ namespace ExampleSurvivor
             // set up the character body here
             CharacterBody bodyComponent = characterPrefab.GetComponent<CharacterBody>();
             bodyComponent.bodyIndex = -1;
-            bodyComponent.baseNameToken = "EXAMPLESURVIVOR_NAME"; // name token
-            bodyComponent.subtitleNameToken = "EXAMPLESURVIVOR_SUBTITLE"; // subtitle token- used for umbras
+            bodyComponent.baseNameToken = "ZUKO_NAME"; // name token
+            bodyComponent.subtitleNameToken = "ZUKO_SUBTITLE"; // subtitle token- used for umbras
             bodyComponent.bodyFlags = CharacterBody.BodyFlags.ImmuneToExecutes;
             bodyComponent.rootMotionInMainState = false;
             bodyComponent.mainRootSpeed = 0;
@@ -194,7 +193,6 @@ namespace ExampleSurvivor
             characterModel.autoPopulateLightInfos = true;
             characterModel.invisibilityCount = 0;
             characterModel.temporaryOverlays = new List<TemporaryOverlay>();
-
             TeamComponent teamComponent = null;
             if (characterPrefab.GetComponent<TeamComponent>() != null) teamComponent = characterPrefab.GetComponent<TeamComponent>();
             else teamComponent = characterPrefab.GetComponent<TeamComponent>();
@@ -275,8 +273,8 @@ namespace ExampleSurvivor
 
             // this sets up the character's hurtbox, kinda confusing, but should be fine as long as it's set up in unity right
             HurtBoxGroup hurtBoxGroup = model.AddComponent<HurtBoxGroup>();
-
             HurtBox componentInChildren = model.GetComponentInChildren<CapsuleCollider>().gameObject.AddComponent<HurtBox>();
+            
             componentInChildren.gameObject.layer = LayerIndex.entityPrecise.intVal;
             componentInChildren.healthComponent = healthComponent;
             componentInChildren.isBullseye = true;
@@ -315,30 +313,32 @@ namespace ExampleSurvivor
             aimAnimator.pitchGiveupRange = 30f;
             aimAnimator.yawGiveupRange = 10f;
             aimAnimator.giveupDuration = 8f;
+            Debug.Log("8");
         }
 
         private void RegisterCharacter()
         {
             // now that the body prefab's set up, clone it here to make the display prefab
-            characterDisplay = PrefabAPI.InstantiateClone(characterPrefab.GetComponent<ModelLocator>().modelBaseTransform.gameObject, "ExampleSurvivorDisplay", true, "C:\\Users\\test\\Documents\\ror2mods\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor.cs", "RegisterCharacter", 153);
+            characterDisplay = PrefabAPI.InstantiateClone(characterPrefab.GetComponent<ModelLocator>().modelBaseTransform.gameObject, "ZukoDisplay", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "RegisterCharacter", 165);
             characterDisplay.AddComponent<NetworkIdentity>();
 
-            // clone rex's syringe projectile prefab here to use as our own projectile
-            arrowProjectile = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Projectiles/SyringeProjectile"), "Prefabs/Projectiles/ExampleArrowProjectile", true, "C:\\Users\\test\\Documents\\ror2mods\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor.cs", "RegisterCharacter", 155);
+            // @TODO: Important code to use to register our own projectiles later......
+            //// clone rex's syringe projectile prefab here to use as our own projectile
+            //arrowProjectile = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Projectiles/SyringeProjectile"), "Prefabs/Projectiles/ExampleArrowProjectile", true, path + "\\Zuko.cs", "RegisterCharacter", 155);
 
-            // just setting the numbers to 1 as the entitystate will take care of those
-            arrowProjectile.GetComponent<ProjectileController>().procCoefficient = 1f;
-            arrowProjectile.GetComponent<ProjectileDamage>().damage = 1f;
-            arrowProjectile.GetComponent<ProjectileDamage>().damageType = DamageType.Generic;
+            //// just setting the numbers to 1 as the entitystate will take care of those
+            //arrowProjectile.GetComponent<ProjectileController>().procCoefficient = 1f;
+            //arrowProjectile.GetComponent<ProjectileDamage>().damage = 1f;
+            //arrowProjectile.GetComponent<ProjectileDamage>().damageType = DamageType.Generic;
 
-            // register it for networking
-            if (arrowProjectile) PrefabAPI.RegisterNetworkPrefab(arrowProjectile);
+            //// register it for networking
+            //if (arrowProjectile) PrefabAPI.RegisterNetworkPrefab(arrowProjectile);
 
-            // add it to the projectile catalog or it won't work in multiplayer
-            ProjectileCatalog.getAdditionalEntries += list =>
-            {
-                list.Add(arrowProjectile);
-            };
+            //// add it to the projectile catalog or it won't work in multiplayer
+            //ProjectileCatalog.getAdditionalEntries += list =>
+            //{
+            //    list.Add(arrowProjectile);
+            //};
 
 
             // write a clean survivor description here!
@@ -349,16 +349,16 @@ namespace ExampleSurvivor
             desc = desc + "< ! > Sample Text 4.</color>" + Environment.NewLine + Environment.NewLine;
 
             // add the language tokens
-            LanguageAPI.Add("EXAMPLESURVIVOR_NAME", "Example Survivor");
-            LanguageAPI.Add("EXAMPLESURVIVOR_DESCRIPTION", desc);
-            LanguageAPI.Add("EXAMPLESURVIVOR_SUBTITLE", "Template for Custom Survivors");
+            LanguageAPI.Add("ZUKO_NAME", "Zuko");
+            LanguageAPI.Add("ZUKO_DESCRIPTION", desc);
+            LanguageAPI.Add("ZUKO_SUBTITLE", "Zuko from Avatar: The Last Airbender");
 
             // add our new survivor to the game~
             SurvivorDef survivorDef = new SurvivorDef
             {
-                name = "EXAMPLESURVIVOR_NAME",
+                name = "ZUKO_NAME",
                 unlockableName = "",
-                descriptionToken = "EXAMPLESURVIVOR_DESCRIPTION",
+                descriptionToken = "ZUKO_DESCRIPTION",
                 primaryColor = characterColor,
                 bodyPrefab = characterPrefab,
                 displayPrefab = characterDisplay
@@ -392,7 +392,7 @@ namespace ExampleSurvivor
         void RegisterStates()
         {
             // register the entitystates for networking reasons
-            LoadoutAPI.AddSkill(typeof(FireFireBolt));
+            LoadoutAPI.AddSkill(typeof(FireFirePunch));
         }
 
         void PassiveSetup()
@@ -400,12 +400,12 @@ namespace ExampleSurvivor
             // set up the passive skill here if you want
             SkillLocator component = characterPrefab.GetComponent<SkillLocator>();
 
-            LanguageAPI.Add("EXAMPLESURVIVOR_PASSIVE_NAME", "Passive");
-            LanguageAPI.Add("EXAMPLESURVIVOR_PASSIVE_DESCRIPTION", "<style=cIsUtility>Doot</style> <style=cIsHealing>doot</style>.");
+            LanguageAPI.Add("ZUKO_PASSIVE_NAME", "Passive");
+            LanguageAPI.Add("ZUKO_PASSIVE_DESCRIPTION", "<style=cIsUtility>Doot</style> <style=cIsHealing>doot</style>.");
 
             component.passiveSkill.enabled = true;
-            component.passiveSkill.skillNameToken = "EXAMPLESURVIVOR_PASSIVE_NAME";
-            component.passiveSkill.skillDescriptionToken = "EXAMPLESURVIVOR_PASSIVE_DESCRIPTION";
+            component.passiveSkill.skillNameToken = "ZUKO_PASSIVE_NAME";
+            component.passiveSkill.skillDescriptionToken = "ZUKO_PASSIVE_DESCRIPTION";
             component.passiveSkill.icon = Assets.iconP;
         }
 
@@ -413,21 +413,12 @@ namespace ExampleSurvivor
         {
             SkillLocator component = characterPrefab.GetComponent<SkillLocator>();
 
-            LanguageAPI.Add("EXAMPLESURVIVOR_PRIMARY_CROSSBOW_NAME", "Crossbow");
-            LanguageAPI.Add("EXAMPLESURVIVOR_PRIMARY_CROSSBOW_DESCRIPTION", "Fire an arrow, dealing <style=cIsDamage>200% damage</style>.");
+            LanguageAPI.Add("ZUKO_PRIMARY_FIREPUNCH_NAME", "Fire Punch");
+            LanguageAPI.Add("ZUKO_PRIMARY_FIREPUNCH_DESCRIPTION", "Fire a flame blast, dealing <style=cIsDamage>200% damage</style>.");
 
             // set up your primary skill def here!
-            On.EntityStates.Mage.Weapon.FireFireBolt.OnEnter += (orig, self) =>
-            {
-                // [The code we want to run]
-                self.damageCoefficient = 0.1f;
-                // Call the original function (orig)
-                // on the object it's normally called on (self)
-                orig(self);
-            };
-
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(FireFireBolt));
+            mySkillDef.activationState = new SerializableEntityStateType(typeof(FireFirePunch));
             mySkillDef.activationStateMachineName = "Weapon";
             mySkillDef.baseMaxStock = 1;
             mySkillDef.baseRechargeInterval = 0f;
@@ -444,9 +435,9 @@ namespace ExampleSurvivor
             mySkillDef.shootDelay = 0f;
             mySkillDef.stockToConsume = 1;
             mySkillDef.icon = Assets.icon1;
-            mySkillDef.skillDescriptionToken = "EXAMPLESURVIVOR_PRIMARY_CROSSBOW_DESCRIPTION";
-            mySkillDef.skillName = "EXAMPLESURVIVOR_PRIMARY_CROSSBOW_NAME";
-            mySkillDef.skillNameToken = "EXAMPLESURVIVOR_PRIMARY_CROSSBOW_NAME";
+            mySkillDef.skillDescriptionToken = "ZUKO_PRIMARY_FIREPUNCH_DESCRIPTION";
+            mySkillDef.skillName = "ZUKO_PRIMARY_FIREPUNCH_NAME";
+            mySkillDef.skillNameToken = "ZUKO_PRIMARY_FIREPUNCH_NAME";
 
             LoadoutAPI.AddSkillDef(mySkillDef);
 
@@ -479,9 +470,7 @@ namespace ExampleSurvivor
         private void CreateDoppelganger()
         {
             // set up the doppelganger for artifact of vengeance here
-            // quite simple, gets a bit more complex if you're adding your own ai, but commando ai will do
-
-            doppelganger = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterMasters/CommandoMonsterMaster"), "ExampleSurvivorMonsterMaster", true, "C:\\Users\\test\\Documents\\ror2mods\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor\\ExampleSurvivor.cs", "CreateDoppelganger", 159);
+            doppelganger = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterMasters/CommandoMonsterMaster"), "ZukoMonsterMaster", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "CreateDoppelganger", 181);
 
             MasterCatalog.getAdditionalEntries += delegate (List<GameObject> list)
             {
@@ -517,7 +506,7 @@ namespace ExampleSurvivor
                 using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Zuko.zukobundle"))
                 {
                     MainAssetBundle = AssetBundle.LoadFromStream(assetStream);
-                    Provider = new AssetBundleResourcesProvider("@ExampleSurvivor", MainAssetBundle);
+                    Provider = new AssetBundleResourcesProvider("@Zuko", MainAssetBundle);
                 }
             }
 
@@ -530,7 +519,7 @@ namespace ExampleSurvivor
             }*/
 
             // and now we gather the assets
-            charPortrait = MainAssetBundle.LoadAsset<Sprite>("ExampleSurvivorBody").texture;
+            charPortrait = MainAssetBundle.LoadAsset<Sprite>("ZukoBody").texture;
 
             iconP = MainAssetBundle.LoadAsset<Sprite>("PassiveIcon");
             icon1 = MainAssetBundle.LoadAsset<Sprite>("Skill1Icon");
@@ -544,74 +533,213 @@ namespace ExampleSurvivor
 
 
 // the entitystates namespace is used to make the skills, i'm not gonna go into detail here but it's easy to learn through trial and error
-namespace EntityStates.ExampleSurvivorStates
+namespace EntityStates.ZukoStates
 {
-    public class ExampleSurvivorFireArrow : BaseSkillState
+
+    // Token: 0x020009A5 RID: 2469
+    public class FireFirePunch : BaseState, SteppedSkillDef.IStepSetter
     {
-        public float damageCoefficient = 2f;
-        public float baseDuration = 0.75f;
-        public float recoil = 1f;
-        public static GameObject tracerEffectPrefab = Resources.Load<GameObject>("Prefabs/Effects/Tracers/TracerToolbotRebar");
-
+        public GameObject projectilePrefab;
+        public GameObject muzzleflashEffectPrefab;
+        public float procCoefficient;
+        public float damageCoefficient;
+        public float force = 20f;
+        public static float attackSpeedAltAnimationThreshold;
+        public float baseDuration;
+        public string attackSoundString;
+        public float attackSoundPitch;
+        public static float bloom;
         private float duration;
-        private float fireDuration;
-        private bool hasFired;
-        private Animator animator;
+        private bool hasFiredGauntlet;
         private string muzzleString;
+        private Transform muzzleTransform;
+        private Animator animator;
+        private ChildLocator childLocator;
+        private FireFirePunch.Gauntlet gauntlet;
+        public enum Gauntlet
+        {
+            Left,
+            Right
+        }
 
+        // Token: 0x06003933 RID: 14643 RVA: 0x000E9B5F File Offset: 0x000E7D5F
+        public void SetStep(int i)
+        {
+            this.gauntlet = (FireFirePunch.Gauntlet)i;
+        }
+
+        // Token: 0x06003934 RID: 14644 RVA: 0x000E9B68 File Offset: 0x000E7D68
         public override void OnEnter()
         {
             base.OnEnter();
             this.duration = this.baseDuration / this.attackSpeedStat;
-            this.fireDuration = 0.25f * this.duration;
+            Util.PlayScaledSound(this.attackSoundString, base.gameObject, this.attackSoundPitch);
             base.characterBody.SetAimTimer(2f);
             this.animator = base.GetModelAnimator();
-            this.muzzleString = "Muzzle";
-
-
-            base.PlayAnimation("Gesture, Override", "FireArrow", "FireArrow.playbackRate", this.duration);
+            if (this.animator)
+            {
+                this.childLocator = this.animator.GetComponent<ChildLocator>();
+            }
+            FireFirePunch.Gauntlet gauntlet = this.gauntlet;
+            if (gauntlet != FireFirePunch.Gauntlet.Left)
+            {
+                if (gauntlet != FireFirePunch.Gauntlet.Right)
+                {
+                    return;
+                }
+                this.muzzleString = "Hand.R";
+                //if (this.attackSpeedStat < FireFirePunch.attackSpeedAltAnimationThreshold)
+                //{
+                //    base.PlayCrossfade("Gesture, Additive", "Cast1Right", "FireGauntlet.playbackRate", this.duration, 0.1f);
+                //    base.PlayAnimation("Gesture Left, Additive", "Empty");
+                //    base.PlayAnimation("Gesture Right, Additive", "Empty");
+                //    return;
+                //}
+                base.PlayAnimation("Gesture, Override", "FirePunchRight", "FireArrow.playbackRate", this.duration);
+                this.FireGauntlet();
+                return;
+            }
+            else
+            {
+                this.muzzleString = "Hand.L";
+                //if (this.attackSpeedStat < FireFirePunch.attackSpeedAltAnimationThreshold)
+                //{
+                //    base.PlayCrossfade("Gesture, Additive", "Cast1Left", "FireGauntlet.playbackRate", this.duration, 0.1f);
+                //    base.PlayAnimation("Gesture Left, Additive", "Empty");
+                //    base.PlayAnimation("Gesture Right, Additive", "Empty");
+                //    return;
+                //}
+                base.PlayAnimation("Gesture, Override", "FirePunchLeft", "FireArrow.playbackRate", this.duration);
+                this.FireGauntlet();
+                return;
+            }
         }
-
+        
         public override void OnExit()
         {
             base.OnExit();
         }
-
-        private void FireArrow()
+        
+        private void FireGauntlet()
         {
-            if (!this.hasFired)
+            if (this.hasFiredGauntlet)
             {
-                this.hasFired = true;
-
-                base.characterBody.AddSpreadBloom(0.75f);
-                Ray aimRay = base.GetAimRay();
-                EffectManager.SimpleMuzzleFlash(Commando.CommandoWeapon.FirePistol.effectPrefab, base.gameObject, this.muzzleString, false);
-
-                if (base.isAuthority)
-                {
-                    ProjectileManager.instance.FireProjectile(ExampleSurvivor.ExampleSurvivor.arrowProjectile, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
-                }
+                return;
+            }
+            base.characterBody.AddSpreadBloom(FireFirePunch.bloom);
+            this.hasFiredGauntlet = true;
+            Ray aimRay = base.GetAimRay();
+            if (this.childLocator)
+            {
+                this.muzzleTransform = this.childLocator.FindChild(this.muzzleString);
+            }
+            if (this.muzzleflashEffectPrefab)
+            {
+                EffectManager.SimpleMuzzleFlash(this.muzzleflashEffectPrefab, base.gameObject, this.muzzleString, false);
+            }
+            if (base.isAuthority)
+            {
+                ProjectileManager.instance.FireProjectile(this.projectilePrefab, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
             }
         }
-
+        
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-
-            if (base.fixedAge >= this.fireDuration)
+            if (this.animator.GetFloat("FireGauntlet.fire") > 0f && !this.hasFiredGauntlet)
             {
-                FireArrow();
+                this.FireGauntlet();
             }
-
             if (base.fixedAge >= this.duration && base.isAuthority)
             {
                 this.outer.SetNextStateToMain();
             }
         }
-
+        
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Skill;
         }
+        
+        public override void OnSerialize(NetworkWriter writer)
+        {
+            base.OnSerialize(writer);
+            writer.Write((byte)this.gauntlet);
+        }
+        
+        public override void OnDeserialize(NetworkReader reader)
+        {
+            base.OnDeserialize(reader);
+            this.gauntlet = (FireFirePunch.Gauntlet)reader.ReadByte();
+        }
     }
+
+    //public class ZukoFirePunch : BaseSkillState
+    //{
+    //    public float damageCoefficient = 2f;
+    //    public float baseDuration = 0.75f;
+    //    public float recoil = 1f;
+    //    public static GameObject tracerEffectPrefab = Resources.Load<GameObject>("Prefabs/Effects/Tracers/TracerToolbotRebar");
+
+    //    private float duration;
+    //    private float fireDuration;
+    //    private bool hasFired;
+    //    private Animator animator;
+    //    private string muzzleString;
+
+    //    public override void OnEnter()
+    //    {
+    //        base.OnEnter();
+    //        this.duration = this.baseDuration / this.attackSpeedStat;
+    //        this.fireDuration = 0.25f * this.duration;
+    //        base.characterBody.SetAimTimer(2f);
+    //        this.animator = base.GetModelAnimator();
+    //        this.muzzleString = "Muzzle";
+
+
+    //        base.PlayAnimation("Gesture, Override", "FireArrow", "FireArrow.playbackRate", this.duration);
+    //    }
+
+    //    public override void OnExit()
+    //    {
+    //        base.OnExit();
+    //    }
+
+    //    private void FireArrow()
+    //    {
+    //        if (!this.hasFired)
+    //        {
+    //            this.hasFired = true;
+
+    //            base.characterBody.AddSpreadBloom(0.75f);
+    //            Ray aimRay = base.GetAimRay();
+    //            EffectManager.SimpleMuzzleFlash(Commando.CommandoWeapon.FirePistol.effectPrefab, base.gameObject, this.muzzleString, false);
+
+    //            if (base.isAuthority)
+    //            {
+    //                ProjectileManager.instance.FireProjectile(Zuko.Zuko.arrowProjectile, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
+    //            }
+    //        }
+    //    }
+
+    //    public override void FixedUpdate()
+    //    {
+    //        base.FixedUpdate();
+
+    //        if (base.fixedAge >= this.fireDuration)
+    //        {
+    //            FireArrow();
+    //        }
+
+    //        if (base.fixedAge >= this.duration && base.isAuthority)
+    //        {
+    //            this.outer.SetNextStateToMain();
+    //        }
+    //    }
+
+    //    public override InterruptPriority GetMinimumInterruptPriority()
+    //    {
+    //        return InterruptPriority.Skill;
+    //    }
+    //}
 }

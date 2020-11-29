@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3729523063
+CRC: 1375278408
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e4934a537b1eb68e998635ea208cd028
+    Hash: 5f72de11fd777685c51cbf9b46b83615
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2a4e89482639225e45e1417430751cc1
+    Hash: 2520949b20c9c37c27f578ca021ed2b3
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,16 +29,10 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 90
   Script: {instanceID: 0}
-- Class: 91
-  Script: {instanceID: 0}
 - Class: 95
   Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: 67079b849227b734694872d8810229b8, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 24f98ceb39626e542bce4568de94b61d, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: aaabc320440a02340b0239f0cf1745a2, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 136
@@ -57,7 +51,6 @@ Assets:
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/Animations/ExampleSurvivorFireArrow.anim
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/Junk/Run.dae
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/PassiveIcon.png
-- Assets/ExampleSurvivor/ExampleSurvivorAssets/Animations/animExampleSurvivor.controller
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/Junk/ExampleSurvivorMesh.mesh
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/Materials/matExampleSurvivor.mat
 - Assets/ExampleSurvivor/ExampleSurvivorAssets/Skill2Icon.png

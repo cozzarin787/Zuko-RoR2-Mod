@@ -4,6 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="zukobundle" />
   </ItemGroup>
@@ -77,5 +85,9 @@
       <HintPath>libs\RoR2Libs\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)Thunderstore.io&quot;&#xD;&#xA;(powershell Compress-Archive -Path '$(ProjectDir)Thunderstore.io\Zuko.dll', '$(ProjectDir)Thunderstore.io\icon.png', '$(ProjectDir)Thunderstore.io\manifest.json', '$(ProjectDir)Thunderstore.io\README.md' -DestinationPath '$(ProjectDir)Thunderstore.io\jcozzarin-Zuko.zip' -Force)" />
+  </Target>
 
 </Project>

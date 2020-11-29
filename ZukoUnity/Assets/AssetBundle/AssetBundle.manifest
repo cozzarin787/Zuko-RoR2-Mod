@@ -1,11 +1,10 @@
 ManifestFileVersion: 0
-CRC: 2447630847
+CRC: 2553937258
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: examplesurvivorbundle
+      Name: zukobundle
       Dependencies: {}
     Info_1:
-      Name: zukobundle
-      Dependencies:
-        Dependency_0: examplesurvivorbundle
+      Name: examplesurvivorbundle
+      Dependencies: {}

@@ -1,0 +1,60 @@
+ManifestFileVersion: 0
+CRC: 2669987065
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 86c795a382f87d8640d3f8695c2a7aa8
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 22d7ec4e6477378e3d5dd40eebbd4574
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 67079b849227b734694872d8810229b8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: aaabc320440a02340b0239f0cf1745a2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 24f98ceb39626e542bce4568de94b61d, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Zuko/ZukoAssets/mdlZuko.prefab
+- Assets/Zuko/ZukoAssets/Animations/animZuko.controller
+- Assets/Zuko/ZukoAssets/Junk/ZukoBlend.blend
+- Assets/Zuko/ZukoAssets/ZukoBody.jpg
+- Assets/Zuko/ZukoAssets/Skill4Icon.jpg
+- Assets/Zuko/ZukoAssets/Skill2Icon.PNG
+- Assets/Zuko/ZukoAssets/Skill1Icon.PNG
+- Assets/Zuko/ZukoAssets/Skill3Icon.PNG
+- Assets/Zuko/ZukoAssets/Materials/Material.mat
+- Assets/Zuko/ZukoAssets/Skill3IconAlt.PNG
+- Assets/Zuko/ZukoAssets/Skill2IconAlt.PNG
+- Assets/Zuko/ZukoAssets/PassiveIcon.png
+- Assets/Zuko/ZukoAssets/Skill2Icon_Old.PNG
+Dependencies: []
