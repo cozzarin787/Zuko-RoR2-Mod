@@ -30,7 +30,8 @@ namespace Zuko
         public GameObject characterDisplay; // the prefab used for character select
         public GameObject doppelganger; // umbra shit
 
-        public static GameObject arrowProjectile; // prefab for our survivor's primary attack projectile
+        public static GameObject fireBallProjectile; // prefab for our survivor's primary attack projectile
+        public static GameObject fireMuzzleFlash; // prefab for fireball muzzle flash effect
 
         private static readonly Color characterColor = new Color(0.55f, 0.55f, 0.55f); // color used for the survivor
 
@@ -49,7 +50,7 @@ namespace Zuko
             Destroy(main.transform.Find("CameraPivot").gameObject);
             Destroy(main.transform.Find("AimOrigin").gameObject);
 
-            // make sure it's set up right in the unity project
+            // make sure it's set up right in the unity
             GameObject model = Assets.MainAssetBundle.LoadAsset<GameObject>("mdlZuko");
 
             return model;
@@ -59,7 +60,6 @@ namespace Zuko
         {
             // first clone the commando prefab so we can turn that into our own survivor
             characterPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody"), "ZukoBody", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "CreatePrefab", 151);
-
             characterPrefab.GetComponent<NetworkIdentity>().localPlayerAuthority = true;
 
             // create the model here, we're gonna replace commando's model with our own
@@ -67,7 +67,7 @@ namespace Zuko
 
             GameObject gameObject = new GameObject("ModelBase");
             gameObject.transform.parent = characterPrefab.transform;
-            gameObject.transform.localPosition = new Vector3(0f, -0.81f, 0f);
+            gameObject.transform.localPosition = Vector3.zero;
             gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
@@ -86,7 +86,7 @@ namespace Zuko
             Transform transform = model.transform;
             transform.parent = gameObject.transform;
             transform.localPosition = Vector3.zero;
-            transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+            transform.localScale = new Vector3(1f, 1f, 1f);
             transform.localRotation = Quaternion.identity;
 
             CharacterDirection characterDirection = characterPrefab.GetComponent<CharacterDirection>();
@@ -313,7 +313,6 @@ namespace Zuko
             aimAnimator.pitchGiveupRange = 30f;
             aimAnimator.yawGiveupRange = 10f;
             aimAnimator.giveupDuration = 8f;
-            Debug.Log("8");
         }
 
         private void RegisterCharacter()
@@ -322,23 +321,22 @@ namespace Zuko
             characterDisplay = PrefabAPI.InstantiateClone(characterPrefab.GetComponent<ModelLocator>().modelBaseTransform.gameObject, "ZukoDisplay", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "RegisterCharacter", 165);
             characterDisplay.AddComponent<NetworkIdentity>();
 
-            // @TODO: Important code to use to register our own projectiles later......
-            //// clone rex's syringe projectile prefab here to use as our own projectile
-            //arrowProjectile = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Projectiles/SyringeProjectile"), "Prefabs/Projectiles/ExampleArrowProjectile", true, path + "\\Zuko.cs", "RegisterCharacter", 155);
+            // clone artificers firebolt projectile prefab here to use as our own projectile
+            fireBallProjectile = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/Projectiles/MageFirebolt"), "Prefabs/Projectiles/ZukoFireBall", true, "D:\\Ror2Mod\\Zuko-RoR2-Mod\\ZukoProject\\Zuko.cs", "RegisterCharacter", 155);
 
-            //// just setting the numbers to 1 as the entitystate will take care of those
-            //arrowProjectile.GetComponent<ProjectileController>().procCoefficient = 1f;
-            //arrowProjectile.GetComponent<ProjectileDamage>().damage = 1f;
-            //arrowProjectile.GetComponent<ProjectileDamage>().damageType = DamageType.Generic;
+            // just setting the numbers to 1 as the entitystate will take care of those
+            fireBallProjectile.GetComponent<ProjectileController>().procCoefficient = 1f;
+            fireBallProjectile.GetComponent<ProjectileDamage>().damage = 1f;
+            fireBallProjectile.GetComponent<ProjectileDamage>().damageType = DamageType.IgniteOnHit;
 
-            //// register it for networking
-            //if (arrowProjectile) PrefabAPI.RegisterNetworkPrefab(arrowProjectile);
+            // register it for networking
+            if (fireBallProjectile) PrefabAPI.RegisterNetworkPrefab(fireBallProjectile);
 
-            //// add it to the projectile catalog or it won't work in multiplayer
-            //ProjectileCatalog.getAdditionalEntries += list =>
-            //{
-            //    list.Add(arrowProjectile);
-            //};
+            // add it to the projectile catalog or it won't work in multiplayer
+            ProjectileCatalog.getAdditionalEntries += list =>
+            {
+                list.Add(fireBallProjectile);
+            };
 
 
             // write a clean survivor description here!
@@ -539,16 +537,15 @@ namespace EntityStates.ZukoStates
     // Token: 0x020009A5 RID: 2469
     public class FireFirePunch : BaseState, SteppedSkillDef.IStepSetter
     {
-        public GameObject projectilePrefab;
-        public GameObject muzzleflashEffectPrefab;
-        public float procCoefficient;
-        public float damageCoefficient;
+        public GameObject muzzleflashEffectPrefab = Resources.Load<GameObject>("Prefabs/Effects/Muzzleflashes/MuzzleflashMageFire");
+        public float procCoefficient = 1.0f;
+        public float damageCoefficient = 2.0f;
         public float force = 20f;
         public static float attackSpeedAltAnimationThreshold;
-        public float baseDuration;
-        public string attackSoundString;
-        public float attackSoundPitch;
-        public static float bloom;
+        public float baseDuration = 1.0f;
+        public string attackSoundString = "Play_mage_m1_shoot";
+        public float attackSoundPitch = 1.0f;
+        public static float bloom = 0.75f;
         private float duration;
         private bool hasFiredGauntlet;
         private string muzzleString;
@@ -635,11 +632,15 @@ namespace EntityStates.ZukoStates
             }
             if (this.muzzleflashEffectPrefab)
             {
+                Debug.Log("Before");
                 EffectManager.SimpleMuzzleFlash(this.muzzleflashEffectPrefab, base.gameObject, this.muzzleString, false);
+                Debug.Log("After");
             }
             if (base.isAuthority)
             {
-                ProjectileManager.instance.FireProjectile(this.projectilePrefab, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
+                Debug.Log("Before");
+                ProjectileManager.instance.FireProjectile(Zuko.Zuko.fireBallProjectile, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
+                Debug.Log("After");
             }
         }
         
@@ -717,7 +718,7 @@ namespace EntityStates.ZukoStates
 
     //            if (base.isAuthority)
     //            {
-    //                ProjectileManager.instance.FireProjectile(Zuko.Zuko.arrowProjectile, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
+    //                ProjectileManager.instance.FireProjectile(Zuko.Zuko.fireBallProjectile, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageCoefficient * this.damageStat, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
     //            }
     //        }
     //    }
